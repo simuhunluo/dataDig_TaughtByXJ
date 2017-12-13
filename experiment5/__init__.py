@@ -17,7 +17,7 @@ def createC1(dataset):
     C1 = []
     for transaction in dataset:
         for item in transaction:
-            if not [item] in transaction:
+            if not [item] in C1:
                 C1.append([item])
     C1.sort()
     return map(frozenset, C1)
@@ -35,7 +35,7 @@ def scanD(D, Ck, minSupport):
                 else:
                     ssCnt[can] += 1
     numitems = float(len(D))  # 数据集长度
-    retList = {}
+    retList = []
     supportData = {}
     for key in ssCnt:
         support = ssCnt[key] / numitems
@@ -74,32 +74,44 @@ def apriori(dataset, minsupport=0.5):
     return L, supportData
 
 
-# 下面是关联规则   默认最小置信度为0.7
-def generateRules(L, supportData, minConf=0.7):
-    bigRuleList = []
-    for i in range(1, len(L)):
-        for freqSet in L[i]:
-            H1=[frozenset([item]) for item in freqSet]
-            if (i>1):
-                rulesFromConseq(freqSet,H1,supportData,bigRuleList,minConf)
-            else:
-                calConf(freqSet,H1,supportData,bigRuleList,minConf)
-    return bigRuleList
+dataset = loadDataSet()
+print dataset
+# C1=createC1(dataset)
+# C1
+# D=map(set,dataset)
+# D
+# L1,suppData0=scanD(D,C1,0.5)
+# L1
+L, suppData = apriori(dataset)  # 得到频繁项集 默认支持度大于0.5
+L
 
-#               ss
-def calConf(freqSet, H, supportData, brl, minConf=0.7):
-    prunedH=[]
-    for conseq in H:
-        conf=supportData[freqSet]/supportData[freqSet-conseq]#置信度
-        if conf >=minConf:
-            print freqSet-conseq,"--->",conseq,"conf",conf
-            brl.append(conseq)
-    return prunedH
 
-def rulesFromConseq(freqSet,H,supportData,brl,minConf=0.7):
-    m=len(H[0])
-    if (len(freqSet)>(m+1)):
-        Hmp1=aprioriGen(H,m+1)
-        Hmp1=calConf(freqSet,Hmp1,supportData,brl,minConf)
-        if(len(Hmp1)>1):
-            rulesFromConseq(freqSet,Hmp1,supportData,brl,minConf)
+# # 下面是关联规则   默认最小置信度为0.7
+# def generateRules(L, supportData, minConf=0.7):
+#     bigRuleList = []
+#     for i in range(1, len(L)):
+#         for freqSet in L[i]:
+#             H1=[frozenset([item]) for item in freqSet]
+#             if (i>1):
+#                 rulesFromConseq(freqSet,H1,supportData,bigRuleList,minConf)
+#             else:
+#                 calConf(freqSet,H1,supportData,bigRuleList,minConf)
+#     return bigRuleList
+#
+# #               ss
+# def calConf(freqSet, H, supportData, brl, minConf=0.7):
+#     prunedH=[]
+#     for conseq in H:
+#         conf=supportData[freqSet]/supportData[freqSet-conseq]#置信度
+#         if conf >=minConf:
+#             print freqSet-conseq,"--->",conseq,"conf",conf
+#             brl.append(conseq)
+#     return prunedH
+#
+# def rulesFromConseq(freqSet,H,supportData,brl,minConf=0.7):
+#     m=len(H[0])
+#     if (len(freqSet)>(m+1)):
+#         Hmp1=aprioriGen(H,m+1)
+#         Hmp1=calConf(freqSet,Hmp1,supportData,brl,minConf)
+#         if(len(Hmp1)>1):
+#             rulesFromConseq(freqSet,Hmp1,supportData,brl,minConf)
